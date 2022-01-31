@@ -5,6 +5,7 @@ from .serializers import MealSerializer, UserSerializer
 from .models import User, Meal
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from datetime import date
 import requests
 import os                                                                                                                                                                                                          
 
@@ -44,7 +45,7 @@ class MealView(APIView):
             params_1 = {"query": food, "apiKey": apiKey}
             r_1 = requests.get(url = url_1, params = params_1)
             if r_1.status_code != 200:
-                return Response("Api request 1 was not successful")
+                return Response("Details: Missing food parameter", status.HTTP_400_BAD_REQUEST)
             else:
                 data_1 = r_1.json()
                 food_id = data_1["results"][0]["id"]
@@ -70,9 +71,13 @@ class MealView(APIView):
                         user= User.objects.get(pk=self.request.data.get("user"))
                         )
                     meal_data.save()
-                    return Response(f"Meal was successfully saved, carb_count is {carb_count}", status=status.HTTP_201_CREATED)
+                    # serializer = MealSerializer(data=meal_data.json())
+                    # if serializer.is_valid():
+                    return Response(meal_data.to_json(), status=status.HTTP_201_CREATED)
+                    # else:
+                    #     return Response("Invalid")
         else:
-            return Response({"Bad request": "Missing params in request body"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Details": "Missing params in request body"}, status=status.HTTP_400_BAD_REQUEST)
         
 
 

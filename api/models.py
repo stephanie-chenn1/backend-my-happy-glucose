@@ -23,3 +23,15 @@ class Meal(models.Model):
 
     def __str__(self):
         return self.carb_count
+    
+    def to_json(self):
+        return {
+            "id": self.id,
+            "qty": self.qty,
+            "unit": self.unit,
+            "food": self.food,
+            "date": self.date,
+            "time": self.time,
+            "carb_count": self.carb_count,
+            "user": self.user.id
+        }
