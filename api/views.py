@@ -37,7 +37,7 @@ class MealView(APIView):
     def post(self, request, user_id= None, format=None):
         # serializer = MealSerializer(data=request.data)
 
-        if "qty" in request.data and "unit" in request.data and "food" in request.data and "time" in request.data and "user" in request.data and user_id is not None:
+        if "qty" in request.data and "unit" in request.data and "food" in request.data and "time" in request.data and "user" in request.data and "date" in request.data and user_id is not None:
             food = self.request.data.get("food")
             # Ingredient search
             url_1 = "https://api.spoonacular.com/food/ingredients/search"
@@ -67,6 +67,7 @@ class MealView(APIView):
                         unit= unit,
                         food= food,
                         time= self.request.data.get("time",None),
+                        date= self.request.data.get("date",None),
                         carb_count= carb_count,
                         user= User.objects.get(pk=self.request.data.get("user"))
                         )
@@ -79,8 +80,6 @@ class MealView(APIView):
         else:
             return Response({"Details": "Missing params in request body"}, status=status.HTTP_400_BAD_REQUEST)
         
-
-
 
 # class GetUser(APIView):
 #     serializer_class = UserSerializer

@@ -16,7 +16,7 @@ class Meal(models.Model):
     qty = models.IntegerField(null=False)
     unit = models.CharField(max_length=10)
     food = models.CharField(max_length=50)
-    date = models.DateField(auto_now_add=True, blank=True)
+    date = models.DateField(null=False)
     time = models.TimeField()
     carb_count = models.IntegerField(null=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
