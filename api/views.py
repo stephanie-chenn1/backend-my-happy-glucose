@@ -34,6 +34,16 @@ class MealView(APIView):
             serializer = MealSerializer(meals, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def delete(self, request, user_id=None, format=None):
+        # queryset = Meal.objects.all()
+        id = self.request.data.get("id")
+        date = self.request.data.get("date")
+        user= self.request.data.get("user")
+        meal = Meal.objects.get(id=id,date=date, user=user)
+        meal.delete()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
     def post(self, request, user_id= None, format=None):
         # serializer = MealSerializer(data=request.data)
 
