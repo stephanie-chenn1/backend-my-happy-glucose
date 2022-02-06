@@ -35,14 +35,18 @@ class MealView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, user_id=None, format=None):
-        # queryset = Meal.objects.all()
-        id = self.request.data.get("id")
-        date = self.request.data.get("date")
-        user= self.request.data.get("user")
-        meal = Meal.objects.get(id=id,date=date, user=user)
-        meal.delete()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+        if "id" in request.data and "date" in request.data and "user" in request.data:
+            try:
+                id = self.request.data.get("id")
+                date = self.request.data.get("date")
+                user= self.request.data.get("user")
+                
+                meal = Meal.objects.get(id=id,date=date, user=user)
+                meal.delete()
+            except Meal.DoesNotExist:
+                return Response({"Details": "Meal does not exist in db"}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"Details": "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, user_id= None, format=None):
         # serializer = MealSerializer(data=request.data)
