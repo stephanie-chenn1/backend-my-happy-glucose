@@ -97,16 +97,20 @@ class GlucoseView(APIView):
     def get(self, request, user_id, format=None):
         try:
             user = User.objects.get(id=user_id)
-            queryset = Glucose.objects.all()
-            glucose = queryset.filter(user=user_id)
-
-            serializer = GlucoseSerializer(glucose, many=True)
-            return Response(serializer.data)
         except User.DoesNotExist:
             return Response({"Details": "This user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        queryset = Glucose.objects.all()
+        glucose = queryset.filter(user=user_id)
 
-        
+        serializer = GlucoseSerializer(glucose, many=True)
+        return Response(serializer.data)
+
     def post(self, request, user_id, format=None):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"Details": "This user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        
         serializer = GlucoseSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
