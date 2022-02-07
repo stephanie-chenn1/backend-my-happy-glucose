@@ -93,7 +93,6 @@ class MealView(APIView):
         
 
 class GlucoseView(APIView):
-
     def get(self, request, user_id, format=None):
         try:
             user = User.objects.get(id=user_id)
@@ -116,4 +115,18 @@ class GlucoseView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+    def delete(self, request, user_id, format=None):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"Details": "This user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        if "id" not in request.data or "user" not in request.data:
+            return Response({"Details": "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        id = self.request.data.get("id")
+        user= self.request.data.get("user")
+            
+        glucose = Glucose.objects.get(id=id,user=user)
+        glucose.delete()
+        return Response({"Details": f"Successfully deleted glucose id {id}"}, status=status.HTTP_200_OK)
