@@ -35,3 +35,13 @@ class Meal(models.Model):
             "carb_count": self.carb_count,
             "user": self.user.id
         }
+
+class Glucose(models.Model):
+    date = models.DateField(null=False)
+    time = models.TimeField(null=False)
+    glucose = models.IntegerField(null=False)
+    notes = models.TextField(blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.glucose_level

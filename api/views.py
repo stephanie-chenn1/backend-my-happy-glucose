@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest
 from rest_framework import generics, status
-from .serializers import MealSerializer, UserSerializer
-from .models import User, Meal
+from .serializers import MealSerializer, UserSerializer, GlucoseSerializer
+from .models import User, Meal, Glucose
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from datetime import date
@@ -43,6 +43,7 @@ class MealView(APIView):
                 
                 meal = Meal.objects.get(id=id,date=date, user=user)
                 meal.delete()
+                return Response({"Details": f"Successfully deleted meal id {id}"}, status=status.HTTP_200_OK)
             except Meal.DoesNotExist:
                 return Response({"Details": "Meal does not exist in db"}, status=status.HTTP_404_NOT_FOUND)
         else:
@@ -95,39 +96,18 @@ class MealView(APIView):
             return Response({"Details": "Missing params in request body"}, status=status.HTTP_400_BAD_REQUEST)
         
 
-# class GetUser(APIView):
-#     serializer_class = UserSerializer
-#     lookup_url_kwarg = 'username'
+class GlucoseView(APIView):
+    def post(self, request, format=None):
+        serializer = GlucoseSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request, user_id= None):
+        queryset = Glucose.objects.all()
+        glucose = queryset.filter(user=user_id)
 
-#     def get(self, request, format=None):
-#         username= request.GET.get(self.lookup_url_kwarg)
-#         if username != None:
-#             user = User.objects.filter(username=username)
-#             if len(user) > 0:
-#                 data = UserSerializer(user[0]).data
-#                 return Response(data, status=status.HTTP_200_OK)
-#             else:
-#                 return Response({'User not found': 'Invalid user'}, status=status.HTTP_404_NOT_FOUND)
-#         return Response({'Bad request': 'User id parameter not found'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class AddMealView(APIView):
-#     serializer_class = AddMealSerializer
-#     lookup_url_kwarg = 'user_id'
-
-#     def post(self, request, format=None):
-#         id = request.GET.get(self.lookup_url_kwarg)
-
-#         serializer = self.serializer_class(data=request.data)
-#         if serializer.is_valid():
-#             qty = serializer.data.get('qty')
-#             unit = serializer.data.get('unit')
-#             food = serializer.data.get('food')
-#             date = serializer.data.get('date')
-#             time = serializer.data.get('time')
-#             carb_count = serializer.data.get('carb_count')
-#             # user = serializer.data.get('user')
-            
-#             meal = Meal(qty=qty, unit=unit, food=food, date=date, time=time, carb_count=carb_count, username=username)
-#             meal.save()
-#         return Response(AddMealSerializer(meal).data, status=status.HTTP_201_CREATED)
+        serializer = GlucoseSerializer(glucose, many=True)
+        return Response(serializer.data)
+        
