@@ -50,7 +50,6 @@ class MealView(APIView):
             return Response({"Details": "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, user_id= None, format=None):
-        # serializer = MealSerializer(data=request.data)
 
         if "qty" in request.data and "unit" in request.data and "food" in request.data and "time" in request.data and "user" in request.data and "date" in request.data and user_id is not None:
             food = self.request.data.get("food")
@@ -87,27 +86,30 @@ class MealView(APIView):
                         user= User.objects.get(pk=self.request.data.get("user"))
                         )
                     meal_data.save()
-                    # serializer = MealSerializer(data=meal_data.json())
-                    # if serializer.is_valid():
                     return Response(meal_data.to_json(), status=status.HTTP_201_CREATED)
-                    # else:
-                    #     return Response("Invalid")
+
         else:
             return Response({"Details": "Missing params in request body"}, status=status.HTTP_400_BAD_REQUEST)
         
 
 class GlucoseView(APIView):
-    def post(self, request, format=None):
+
+    def get(self, request, user_id, format=None):
+        try:
+            user = User.objects.get(id=user_id)
+            queryset = Glucose.objects.all()
+            glucose = queryset.filter(user=user_id)
+
+            serializer = GlucoseSerializer(glucose, many=True)
+            return Response(serializer.data)
+        except User.DoesNotExist:
+            return Response({"Details": "This user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        
+    def post(self, request, user_id, format=None):
         serializer = GlucoseSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def get(self, request, user_id= None):
-        queryset = Glucose.objects.all()
-        glucose = queryset.filter(user=user_id)
-
-        serializer = GlucoseSerializer(glucose, many=True)
-        return Response(serializer.data)
-        
