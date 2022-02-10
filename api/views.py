@@ -62,7 +62,10 @@ class MealView(APIView):
                 return Response("Details: Missing food parameter", status.HTTP_400_BAD_REQUEST)
             else:
                 data_1 = r_1.json()
-                food_id = data_1["results"][0]["id"]
+                try:
+                    food_id = data_1["results"][0]["id"]
+                except IndexError:
+                    return Response("Details: Food not found in database", status.HTTP_404_NOT_FOUND)
                 
                 # Get nutrient by ingredident id
                 url_2 = f"https://api.spoonacular.com/food/ingredients/{food_id}/information"
