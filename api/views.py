@@ -9,9 +9,31 @@ from datetime import date
 import requests
 import os                                                                                                                                                                                                          
 
-class UserView(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class UserView(APIView):
+    def get(self, request, user_id=None, **kwargs):
+        queryset = User.objects.all()
+        serializer = UserSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+class LoginView(APIView):
+    def get(self, request, user_id, format=None):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"Details": "This user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        if "username" not in request.data or "password" not in request.data:
+            return Response({"Details": "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            username_input = self.request.data.get("username")
+            password_input = self.request.data.get("password")
+
+            if user.username == username_input and user.password == password_input:
+                return Response({"Details": "Correct login credentials"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"Details": "Invalid login credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+        
 
 class MealView(APIView):
     def get(self, request, user_id=None, **kwargs):
@@ -50,7 +72,6 @@ class MealView(APIView):
             return Response({"Details": "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, user_id= None, format=None):
-
         if "qty" in request.data and "unit" in request.data and "food" in request.data and "time" in request.data and "user" in request.data and "date" in request.data and user_id is not None:
             food = self.request.data.get("food")
             # Ingredient search
@@ -172,4 +193,4 @@ class FitnessView(APIView):
             
         fitness = Fitness.objects.get(id=id,user=user)
         fitness.delete()
-        return Response({"Details": f"Successfully deleted glucose id {id}"}, status=status.HTTP_200_OK)
+        return Response({"Details": f"Successfully deleted fitness id {id}"}, status=status.HTTP_200_OK)

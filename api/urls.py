@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import UserView, MealView, GlucoseView, FitnessView
+from .views import UserView, MealView, GlucoseView, FitnessView, LoginView
 from rest_framework import routers
 
 
 urlpatterns = [
     path('users', UserView.as_view()),
+    path('users/<int:user_id>', LoginView.as_view()),
     path('users/<int:user_id>/meals',MealView.as_view()),
     path('users/<int:user_id>/glucose',GlucoseView.as_view()),
     path('users/<int:user_id>/fitness',FitnessView.as_view()),
