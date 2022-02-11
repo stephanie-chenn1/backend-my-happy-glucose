@@ -17,7 +17,7 @@ class Meal(models.Model):
     unit = models.CharField(max_length=10)
     food = models.CharField(max_length=50)
     date = models.DateField(null=False)
-    time = models.TimeField()
+    time = models.TimeField(null=False)
     carb_count = models.IntegerField(null=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -45,3 +45,14 @@ class Glucose(models.Model):
 
     def __str__(self):
         return self.glucose_level
+
+class Fitness(models.Model):
+    date = models.DateField(null=False)
+    time = models.TimeField(null=False)
+    workout_type = models.CharField(max_length=50)
+    notes = models.TextField(blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.workout_type
+
