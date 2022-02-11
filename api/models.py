@@ -48,7 +48,7 @@ class Glucose(models.Model):
 
 class Fitness(models.Model):
     date = models.DateField(null=False)
-    time = models.TimeField(null=False)
+    duration = models.IntegerField(null=False)
     workout_type = models.CharField(max_length=50)
     notes = models.TextField(blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

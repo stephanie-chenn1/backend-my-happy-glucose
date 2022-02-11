@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Meal, Glucose
+from .models import User, Meal, Glucose, Fitness
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,3 +15,8 @@ class GlucoseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Glucose
         fields = ('id', 'date', 'time', 'glucose', 'notes', 'user')
+
+class FitnessSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Fitness
+        fields = ('id', 'date', 'duration', 'workout_type', 'notes', 'user')

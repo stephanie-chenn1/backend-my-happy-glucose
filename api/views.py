@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest
 from rest_framework import generics, status
-from .serializers import MealSerializer, UserSerializer, GlucoseSerializer
-from .models import User, Meal, Glucose
+from .serializers import MealSerializer, UserSerializer, GlucoseSerializer, FitnessSerializer
+from .models import User, Meal, Glucose, Fitness
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from datetime import date
@@ -132,4 +132,44 @@ class GlucoseView(APIView):
             
         glucose = Glucose.objects.get(id=id,user=user)
         glucose.delete()
+        return Response({"Details": f"Successfully deleted glucose id {id}"}, status=status.HTTP_200_OK)
+
+class FitnessView(APIView):
+    def get(self, request, user_id, format=None):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"Details": "This user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        queryset = Fitness.objects.all()
+        glucose = queryset.filter(user=user_id)
+
+        serializer = FitnessSerializer(glucose, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request, user_id, format=None):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"Details": "This user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = FitnessSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, user_id, format=None):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"Details": "This user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        if "id" not in request.data or "user" not in request.data:
+            return Response({"Details": "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        id = self.request.data.get("id")
+        user= self.request.data.get("user")
+            
+        fitness = Fitness.objects.get(id=id,user=user)
+        fitness.delete()
         return Response({"Details": f"Successfully deleted glucose id {id}"}, status=status.HTTP_200_OK)
