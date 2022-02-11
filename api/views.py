@@ -33,6 +33,21 @@ class LoginView(APIView):
             else:
                 return Response({"Details": "Invalid login credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, user_id, format=None):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"Details": "This user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        if "id" not in request.data or "username" not in request.data:
+            return Response({"Details": "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        id = self.request.data.get("id")
+        username= self.request.data.get("username")
+            
+        user = User.objects.get(id=id,username=username)
+        user.delete()
+        return Response({"Details": f"Successfully deleted {username} with user id {id}"}, status=status.HTTP_200_OK)
+
         
 
 class MealView(APIView):
