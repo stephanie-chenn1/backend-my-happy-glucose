@@ -16,7 +16,7 @@ class UserView(APIView):
         return Response(serializer.data)
 
 class LoginView(APIView):
-    def get(self, request, user_id, format=None):
+    def post(self, request, user_id, format=None):
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
