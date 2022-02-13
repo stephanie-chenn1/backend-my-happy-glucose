@@ -57,3 +57,12 @@ class Fitness(models.Model):
     def __str__(self):
         return self.workout_type
 
+class Mood(models.Model):
+    date = models.DateField(null=False)
+    time = models.TimeField(null=False)
+    mood = models.IntegerField(null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.mood
+
