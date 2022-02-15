@@ -15,6 +15,13 @@ class UserView(APIView):
         serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    def post(self, request, user_id=None, format=None):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class LoginView(APIView):
     def post(self, request, user_id, format=None):
         try:
